@@ -25,3 +25,6 @@ class GetTheChosenAnswerState extends QuizState{
 class PlayWrongAudioState extends QuizState{
   
 }
+class WhenUserPressedOnItemState extends QuizState{
+  
+}

@@ -11,11 +11,9 @@ class QuizResultCubit extends Cubit<QuizResultState> {
   int holdeCorrectAnswerIndex = -1;
   int holdeWrongAnswerIndex = -1;
 
-  void resetQuiz() {
-    holdeCorrectAnswerIndex = -1;
-    holdeQuistionIndex = -1;
-    holdeWrongAnswerIndex = -1;
-    emit(ResetState());
+  void getQuistionIndexAndCorrectAnswer({index, List<QuizFrench>? quizfrench}) {
+    holdeQuistionIndexFunc(index);
+    getTheCorrectAnswerFunc(index, quizfrench);
   }
 
   void holdeQuistionIndexFunc(int index) {
@@ -25,10 +23,17 @@ class QuizResultCubit extends Cubit<QuizResultState> {
 
   void getTheCorrectAnswerFunc(int index, List<QuizFrench>? quizfrench) {
     for (var i = 0; i < quizfrench![index].options.length; i++) {
-      if (quizfrench[index].trueAnswer == quizfrench[index].options[i][0]) {
+      if (quizfrench[index].correctAnswer == quizfrench[index].options[i][0]) {
         holdeCorrectAnswerIndex = i;
       }
     }
     emit(HoldCorrectAnswerIndexState());
+  }
+
+  void resetQuiz() {
+    holdeCorrectAnswerIndex = -1;
+    holdeQuistionIndex = -1;
+    holdeWrongAnswerIndex = -1;
+    emit(ResetState());
   }
 }

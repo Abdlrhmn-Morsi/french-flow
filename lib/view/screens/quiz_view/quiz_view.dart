@@ -32,234 +32,236 @@ class _QuizViewState extends State<QuizView> {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
 
-    return WillPopScope(
-      onWillPop: () async {
-        var val = await Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => const LearingView(),
-          ),
-        );
-        if (val != null) {
-          return Future.value(true);
-        }
-        {
-          return Future.value(true);
-        }
-      },
-      child: Scaffold(
-        body: BlocBuilder<QuizCubit, QuizState>(
-          builder: (context, state) {
-            var nextQuestion = QuizCubit.get(context).nextQuestion;
+    return Scaffold(
+      body: BlocBuilder<QuizCubit, QuizState>(
+        builder: (context, state) {
+          var nextQuestion = QuizCubit.get(context).nextQuestion;
 
-            return Padding(
-              padding: const EdgeInsets.only(left: 10, right: 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    height: 300,
-                    decoration: const BoxDecoration(
-                      color: AppColors.darkBlue,
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(40),
-                        bottomRight: Radius.circular(50),
-                      ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 20),
-                        CustomAppBar(
-                            isQuizView: true,
-                            onTapBack: () => Navigator.maybePop(context)),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            CustomPersonCardInfo(
-                              screenHeight: screenHeight,
-                              title: 'الكورس الاول',
-                              subtitle: 'الدرس الاول',
-                              isQuizView: true,
-                            ),
-                          ],
-                        ),
-                        //! answerdQ
-                        Row(
-                          children: [
-                            const CustomText(
-                                color: AppColors.offWhite,
-                                text: 'الســـؤال',
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold),
-                            const SizedBox(width: 10),
-                            CustomText(
-                              text: '0${nextQuestion + 1}',
-                              fontSize: 30,
-                              color: AppColors.offWhite,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            const SizedBox(width: 5),
-                            CustomText(
-                              text: '/0${widget.quizfrench.length}',
-                              fontSize: 20,
-                              color: AppColors.offWhite,
-                            ),
-                          ],
-                        ),
-                        const Divider(
-                          color: AppColors.offWhite,
-                          thickness: 2,
-                        ),
-                        const Spacer(),
-
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            CustomText(
-                              textDirection: TextDirection.ltr,
-                              color: AppColors.offWhite,
-                              text: widget.quizfrench[nextQuestion].quistion
-                                  .toString(),
-                              fontSize: 20,
-                            ),
-                          ],
-                        ),
-                      ],
+          return Padding(
+            padding: const EdgeInsets.only(left: 10, right: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  height: 300,
+                  decoration: const BoxDecoration(
+                    color: AppColors.darkBlue,
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(40),
+                      bottomRight: Radius.circular(50),
                     ),
                   ),
-                  ListView.separated(
-                    separatorBuilder: (context, index) => const SizedBox(
-                      height: 20,
-                    ),
-                    shrinkWrap: true,
-                    itemCount: widget.quizfrench.length,
-                    itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () {
-                          if (!QuizCubit.get(context)
-                              .fristCheckisTheSelectedIsTrue) {
-                            QuizCubit.get(context).indexEqualFunc(index);
-                            QuizCubit.get(context)
-                                .rightAnswerFunc(widget.quizfrench, index);
-                            QuizCubit.get(context).getTheChosenAnswerFunc(
-                                index, widget.quizfrench);
-                          }
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(10),
-                          width: screenWidth * .9,
-                          height: 60,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: QuizCubit.get(context)
-                                  .changeQuizItemColorIsTrueOrFalse(
-                                      index: index,
-                                      quizfrench: widget.quizfrench),
-                              width: 2,
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              SizedBox(
-                                width: screenWidth * .80,
-                                child: CustomText(
-                                  textDirection: TextDirection.ltr,
-                                  maxLines: 2,
-                                  isMaxLines: true,
-                                  text: widget.quizfrench[nextQuestion]
-                                      .options[index][1]
-                                      .toString(),
-                                  color: QuizCubit.get(context)
-                                      .changeQuizItemColorIsTrueOrFalse(
-                                          index: index,
-                                          quizfrench: widget.quizfrench),
-                                ),
-                              ),
-                              const Spacer(),
-                              Container(
-                                padding: const EdgeInsets.all(2),
-                                decoration: const BoxDecoration(
-                                  color: Colors.white,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(
-                                  QuizCubit.get(context)
-                                      .changeQuizItemICONisTrueOrFalse(
-                                          index: index),
-                                  color: QuizCubit.get(context)
-                                      .changeQuizItemColorIsTrueOrFalse(
-                                          isIcon: true,
-                                          index: index,
-                                          quizfrench: widget.quizfrench),
-                                  size: 20,
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                  const Spacer(),
-                  //!btns
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      MaterialButton(
-                        minWidth: 100,
-                        height: 50,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8)),
-                        color: AppColors.darkBlue,
-                        onPressed: (() async {
-                          if (QuizCubit.get(context).goToNextQ) {
-                            QuizCubit.get(context).nextQuestionfunc(
-                                widget.quizfrench.length,
-                                widget.quizfrench,
-                                context);
-                            QuizCubit.get(context).resetToNextQuistion();
-                          } else {
-                            QuizCubit.get(context)
-                                .getTheCorrectAnswerFunc(widget.quizfrench);
-                            QuizCubit.get(context)
-                                .checkIfHeChoseTheRightAnswerFunc(
-                                    widget.quizfrench);
-                          }
-                        }),
-                        child: Row(
-                          children: [
-                            Icon(
-                              QuizCubit.get(context)
-                                      .fristCheckisTheSelectedIsTrue
-                                  ? Icons.arrow_back
-                                  : Icons.check,
+                      const SizedBox(height: 20),
+                      CustomAppBar(
+                          isQuizView: true,
+                          onTapBack: () => Navigator.maybePop(context)),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          CustomPersonCardInfo(
+                            screenHeight: screenHeight,
+                            title: 'الكورس الاول',
+                            subtitle: 'الدرس الاول',
+                            isQuizView: true,
+                          ),
+                        ],
+                      ),
+                      //! answerdQ
+                      Row(
+                        children: [
+                          const CustomText(
                               color: AppColors.offWhite,
-                              size: 20,
-                            ),
-                            const SizedBox(width: 8),
-                            CustomText(
-                              text: QuizCubit.get(context)
-                                      .fristCheckisTheSelectedIsTrue
-                                  ? 'التالي'
-                                  : 'اختر',
-                              color: AppColors.offWhite,
-                              fontSize: 18,
-                            ),
-                          ],
-                        ),
+                              text: 'الســـؤال',
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold),
+                          const SizedBox(width: 10),
+                          CustomText(
+                            text: '0${nextQuestion + 1}',
+                            fontSize: 30,
+                            color: AppColors.offWhite,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          const SizedBox(width: 5),
+                          CustomText(
+                            text: '/0${widget.quizfrench.length}',
+                            fontSize: 20,
+                            color: AppColors.offWhite,
+                          ),
+                        ],
+                      ),
+                      const Divider(
+                        color: AppColors.offWhite,
+                        thickness: 2,
+                      ),
+                      const Spacer(),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          CustomText(
+                            textDirection: TextDirection.ltr,
+                            color: AppColors.offWhite,
+                            text: widget.quizfrench[nextQuestion].quistion
+                                .toString(),
+                            fontSize: 20,
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
-                ],
-              ),
-            );
-          },
-        ),
+                ),
+                ListView.separated(
+                  separatorBuilder: (context, index) => const SizedBox(
+                    height: 20,
+                  ),
+                  shrinkWrap: true,
+                  itemCount: widget.quizfrench.length,
+                  itemBuilder: (context, index) {
+                    return GestureDetector(
+                      onTap: () {
+                        QuizCubit.get(context).whenUserPressedOnItem(
+                          context: context,
+                          index: index,
+                          quizfrench: widget.quizfrench,
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        width: screenWidth * .9,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: QuizCubit.get(context)
+                                .changeQuizItemColorIsTrueOrFalse(
+                                    index: index,
+                                    quizfrench: widget.quizfrench),
+                            width: 2,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              width: screenWidth * .80,
+                              child: CustomText(
+                                textDirection: TextDirection.ltr,
+                                maxLines: 2,
+                                isMaxLines: true,
+                                text: widget.quizfrench[nextQuestion]
+                                    .options[index][1]
+                                    .toString(),
+                                color: QuizCubit.get(context)
+                                    .changeQuizItemColorIsTrueOrFalse(
+                                        index: index,
+                                        quizfrench: widget.quizfrench),
+                              ),
+                            ),
+                            const Spacer(),
+                            LeadingQuistionIcon(widget: widget,index: index,)
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                const Spacer(),
+                //!btns
+                ChoseAndNextBtn(widget: widget),
+                const SizedBox(height: 10),
+              ],
+            ),
+          );
+        },
       ),
+    );
+  }
+}
+
+class LeadingQuistionIcon extends StatelessWidget {
+  final QuizView widget;
+  final int index;
+
+  const LeadingQuistionIcon({
+    Key? key,
+    required this.index,
+    required this.widget,
+  }) : super(key: key);
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(2),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+      ),
+      child: Icon(
+        QuizCubit.get(context)
+            .changeQuizItemICONisTrueOrFalse(
+                index: index),
+        color: QuizCubit.get(context)
+            .changeQuizItemColorIsTrueOrFalse(
+                isIcon: true,
+                index: index,
+                quizfrench: widget.quizfrench),
+        size: 20,
+      ),
+    );
+  }
+}
+
+class ChoseAndNextBtn extends StatelessWidget {
+  const ChoseAndNextBtn({
+    Key? key,
+    required this.widget,
+  }) : super(key: key);
+
+  final QuizView widget;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        MaterialButton(
+          minWidth: 100,
+          height: 50,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8)),
+          color: AppColors.darkBlue,
+          onPressed: (() {
+            QuizCubit.get(context).checkAndGoToNextQuistion(
+              quizfrench: widget.quizfrench,
+              context: context,
+            );
+          }),
+          child: Row(
+            children: [
+              Icon(
+                QuizCubit.get(context).isUserChoseAnAnswer
+                    ? Icons.arrow_back
+                    : Icons.check,
+                color: AppColors.offWhite,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              CustomText(
+                text: QuizCubit.get(context).isUserChoseAnAnswer
+                    ? 'التالي'
+                    : 'اختر',
+                color: AppColors.offWhite,
+                fontSize: 18,
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

@@ -110,9 +110,10 @@ class QuizResult extends StatelessWidget {
                       (index) => GestureDetector(
                         onTap: () {
                           QuizResultCubit.get(context)
-                              .holdeQuistionIndexFunc(index);
-                          QuizResultCubit.get(context)
-                              .getTheCorrectAnswerFunc(index, AppUnits);
+                              .getQuistionIndexAndCorrectAnswer(
+                            index: index,
+                            quizfrench: quizfrench,
+                          );
                         },
                         child: Container(
                           alignment: Alignment.center,
@@ -268,7 +269,7 @@ class QuizResult extends StatelessWidget {
                       QuizCubit.get(context).resetQuiz();
                       Navigator.of(context).pushReplacement(
                         MaterialPageRoute(
-                          builder: (context) => const LessonsView(),
+                          builder: (context) =>  LessonsView(lessons: units[0].lesson),
                         ),
                       );
                     },

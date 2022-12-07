@@ -1,12 +1,12 @@
-import 'package:educaation/core/colors.dart';
-import 'package:educaation/core/strings.dart';
-import 'package:educaation/view/screens/units_view/widgets/custom_drawer.dart';
-import 'package:educaation/view/screens/lessons_view/lessons_view.dart';
-import 'package:educaation/view/widgets/custom_app_bar.dart';
+import 'package:educaation/view/screens/units_view/widgets/unit_grid_view_items.dart';
+import 'package:educaation/view/screens/units_view/widgets/welcome_img_and_content.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
+import 'package:educaation/core/colors.dart';
+import 'package:educaation/view/screens/units_view/widgets/custom_drawer.dart';
+import 'package:educaation/view/widgets/custom_app_bar.dart';
 import '../../../logic/app_cubit/app_cubit.dart';
 import '../../widgets/custom_text.dart';
-import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 
 class UnitsView extends StatelessWidget {
   const UnitsView({super.key});
@@ -68,53 +68,7 @@ class UnitsView extends StatelessWidget {
                     child: CustomAppBar(isHome: true, onTapBack: () {}),
                   ),
                   const SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20, right: 20),
-                    child: Container(
-                      color: Colors.transparent,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: const [
-                                  CustomText(
-                                    fontFamily: 'Aref_Ruqaa',
-                                    fontSize: 22,
-                                    text: 'مرحبا بك',
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  CustomText(
-                                    fontFamily: 'Aref_Ruqaa',
-                                    fontSize: 22,
-                                    text: 'هل انت جاهز لتعلم الغه الفرنسيه',
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  CustomText(
-                                    fontFamily: 'Aref_Ruqaa',
-                                    fontSize: 22,
-                                    text: 'ماذا تنتظر ابدا الان',
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          Image.asset(
-                            'assets/images/bg_profile.png',
-                            height: 180,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                  const WelcomeImgAndContent(),
                   const Spacer(),
                   const Align(
                     alignment: Alignment.center,
@@ -126,79 +80,9 @@ class UnitsView extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  Container(
-                    padding: const EdgeInsets.only(top: 10, bottom: 0),
-                    margin: const EdgeInsets.only(left: 20, right: 20),
-                    height: screenHeight * 0.60,
-                    decoration: const BoxDecoration(
-                      color: AppColors.darkBlue,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(40),
-                        topRight: Radius.circular(40),
-                      ),
-                    ),
-                    child: GridView.builder(
-                      padding: const EdgeInsets.only(top: 10,left: 10,right: 10),
-
-                      shrinkWrap: true,
-                      itemCount: 10,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 10,
-                        mainAxisSpacing: 0.0,
-                      ),
-                      itemBuilder: ((context, index) {
-                        return GestureDetector(
-                          onTap: (() {
-                            index != 0
-                                ? null
-                                : Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => const LessonsView()));
-                          }),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Container(
-                                height: 100,
-                                width: 130,
-                                decoration: BoxDecoration(
-                                  border:
-                                      Border.all(color: Colors.white, width: 1),
-                                  borderRadius: BorderRadius.circular(20),
-                                  image: DecorationImage(
-                                    image: AssetImage(studentImgesList[index]),
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                                child: Container(
-                                    decoration: BoxDecoration(
-                                      color: index == 0 ? null : Colors.black38,
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    child: index == 0
-                                        ? null
-                                        : const Icon(Icons.lock,
-                                            color: Colors.amber)),
-                              ),
-                              const SizedBox(height: 5),
-                              const CustomText(
-                                text: 'الكورس الاول',
-                                color: Colors.white,
-                              ),
-                              const SizedBox(height: 5),
-                              const CustomText(
-                                textHight: 1.6,
-                                fontSize: 12,
-                                text: 'ليس بالامكان أفضل مما كان',
-                                color: Colors.white,
-                              ),
-                            ],
-                          ),
-                        );
-                      }),
-                    ),
-                  ),
+                  UnitGridViewItems(
+                      screenHeight: screenHeight,
+                      studentImgesList: studentImgesList),
                 ],
               ),
             )),
@@ -206,3 +90,8 @@ class UnitsView extends StatelessWidget {
     );
   }
 }
+
+
+
+
+

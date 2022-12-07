@@ -9,6 +9,7 @@ import '../units_view/units_view.dart';
 
 class LessonsView extends StatelessWidget {
   final List<Lesson>? lessons;
+
   const LessonsView({
     Key? key,
     this.lessons,
@@ -18,86 +19,54 @@ class LessonsView extends StatelessWidget {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
-    List choseFromList = [
-      'lesson 1',
-      'lesson 2',
-      'lesson 3',
-      'lesson 4',
-      'lesson 5',
-      'lesson 6',
-    ];
-    List studentImgesList = [
-      'assets/images/student_img_1.jpg',
-      'assets/images/student_img_2.jpg',
-      'assets/images/student_img_3.jpg',
-      'assets/images/student_img_4.jpg',
-      'assets/images/student_img_5.jpg',
-      'assets/images/student_img_6.jpg',
-    ];
-    return WillPopScope(
-      onWillPop: () async {
-        var val = await Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => const UnitsView(),
-          ),
-        );
-        if (val != null) {
-          return Future.value(true);
-        }
-        {
-          return Future.value(true);
-        }
-      },
-      child: Scaffold(
-        body: SizedBox(
-          width: screenWidth,
-          height: screenHeight,
-          child: Padding(
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              children: [
-                const SizedBox(height: 40),
-                CustomAppBar(
-                    onTapBack: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: ((context) => const UnitsView())))),
-                Padding(
-                  padding: const EdgeInsets.only(left: 10, right: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      CustomPersonCardInfo(
-                        screenHeight: screenHeight,
-                        title: 'الوحده الاولي',
-                        isQuizView: false,
+
+    return Scaffold(
+      body: SizedBox(
+        width: screenWidth,
+        height: screenHeight,
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            children: [
+              const SizedBox(height: 40),
+              CustomAppBar(
+                  onTapBack: () => Navigator.of(context).push(MaterialPageRoute(
+                      builder: ((context) => const UnitsView())))),
+              Padding(
+                padding: const EdgeInsets.only(left: 10, right: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CustomPersonCardInfo(
+                      screenHeight: screenHeight,
+                      title: 'الوحده الاولي',
+                      isQuizView: false,
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(right: 20, top: 20),
+                      height: 100,
+                      width: 100,
+                      child: const CircularProgressIndicator(
+                        value: .3,
+                        backgroundColor: AppColors.offBlue,
+                        color: AppColors.darkBlue,
                       ),
-                      Container(
-                        margin: const EdgeInsets.only(right: 20, top: 20),
-                        height: 100,
-                        width: 100,
-                        child: const CircularProgressIndicator(
-                          value: .3,
-                          backgroundColor: AppColors.offBlue,
-                          color: AppColors.darkBlue,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 10),
-                const CustomText(
-                    fontSize: 12,
-                    color: AppColors.darkBlue,
-                    text:
-                        'سيتم فك قفل الدرس التالي مجرد حل اختبار الدرس السابق له ..'),
-                CustomLessonCard(
-                  screenHeight: screenHeight,
-                  choseFromList: choseFromList,
-                  studentImgesList: studentImgesList,
-                ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 10),
+              const CustomText(
+                  fontSize: 12,
+                  color: AppColors.darkBlue,
+                  text:
+                      'سيتم فك قفل الدرس التالي مجرد حل اختبار الدرس السابق له ..'),
+              CustomLessonCard(
+                lessons: lessons!,
+                screenHeight: screenHeight,
+              ),
+            ],
           ),
         ),
       ),
@@ -109,13 +78,12 @@ class CustomLessonCard extends StatelessWidget {
   const CustomLessonCard({
     Key? key,
     required this.screenHeight,
-    required this.choseFromList,
-    required this.studentImgesList,
+    required this.lessons,
   }) : super(key: key);
 
   final double screenHeight;
-  final List choseFromList;
-  final List studentImgesList;
+
+  final List<Lesson> lessons;
 
   @override
   Widget build(BuildContext context) {
@@ -123,16 +91,17 @@ class CustomLessonCard extends StatelessWidget {
       child: ListView.builder(
         padding: const EdgeInsets.all(0),
         shrinkWrap: true,
-        itemCount: 6,
+        itemCount: lessons.length,
         itemBuilder: ((context, index) {
-          // Lesson lesson = lessons[index];
-          // FrenchClass frenchClass = lessons[index].frenchClass!;
+          Lesson lesson = lessons[index];
           return GestureDetector(
               onTap: (() {
                 index == 0
                     ? Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => const LearingView(),
+                          builder: (context) => LearingView(
+                            frenchClass: lesson.frenchClass,
+                          ),
                         ),
                       )
                     : null;
@@ -153,22 +122,22 @@ class CustomLessonCard extends StatelessWidget {
                   children: [
                     index % 2 != 0
                         ? CustomLessonContent(
-                            choseFromList: choseFromList,
-                            index: index,
+                            title: lesson.title.toString(),
+                            description: lesson.description.toString(),
                           )
                         : CustomLessonImg(
-                            studentImgesList: studentImgesList,
+                            image: lesson.img.toString(),
                             index: index,
                           ),
                     const SizedBox(width: 20),
                     index % 2 != 0
                         ? CustomLessonImg(
-                            studentImgesList: studentImgesList,
+                            image: lesson.img.toString(),
                             index: index,
                           )
                         : CustomLessonContent(
-                            choseFromList: choseFromList,
-                            index: index,
+                            title: lesson.title.toString(),
+                            description: lesson.description.toString(),
                           ),
                   ],
                 ),
@@ -182,12 +151,12 @@ class CustomLessonCard extends StatelessWidget {
 class CustomLessonContent extends StatelessWidget {
   const CustomLessonContent({
     Key? key,
-    required this.choseFromList,
-    required this.index,
+    required this.title,
+    required this.description,
   }) : super(key: key);
 
-  final List choseFromList;
-  final int index;
+  final String title;
+  final String description;
 
   @override
   Widget build(BuildContext context) {
@@ -203,24 +172,16 @@ class CustomLessonContent extends StatelessWidget {
           CustomText(
             fontWeight: FontWeight.bold,
             fontSize: 18,
-            text: choseFromList[index],
+            text: title,
             color: Colors.white,
           ),
           const SizedBox(height: 10),
-          const CustomText(
+          CustomText(
             fontSize: 12,
-            text: 'ma famille et moi avons déménagé dans le sud de la France',
+            text: description.toString(),
             color: Colors.white,
           ),
           const SizedBox(height: 8),
-          const CustomText(
-            fontSize: 10,
-            text:
-                'Ma mère s\'appelle Emilie Summer:elle est infirmière dans un hôpital',
-            color: Colors.white,
-            isMaxLines: true,
-            maxLines: 1,
-          ),
           const SizedBox(height: 5),
         ],
       ),
@@ -231,12 +192,12 @@ class CustomLessonContent extends StatelessWidget {
 class CustomLessonImg extends StatelessWidget {
   const CustomLessonImg({
     Key? key,
-    required this.studentImgesList,
     required this.index,
+    required this.image,
   }) : super(key: key);
 
-  final List studentImgesList;
   final int index;
+  final String image;
 
   @override
   Widget build(BuildContext context) {
@@ -247,7 +208,7 @@ class CustomLessonImg extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         image: DecorationImage(
-          image: AssetImage(studentImgesList[index]),
+          image: AssetImage(image),
           fit: BoxFit.cover,
         ),
       ),

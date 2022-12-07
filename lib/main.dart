@@ -1,6 +1,6 @@
 import 'package:educaation/logic/quiz_cubit/quiz_cubit.dart';
 import 'package:educaation/logic/quize_result_cubit/quiz_result_cubit.dart';
-import 'package:educaation/view/screens/intro_view.dart';
+import 'package:educaation/view/screens/intro_view/intro_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -52,7 +52,7 @@ class MyApp extends StatelessWidget {
           Locale('en', 'US'),
         ],
         debugShowCheckedModeBanner: false,
-        title: 'education',
+        title: 'frenchflow',
         home: const IntroView(),
         theme: Themes.light,
       ),

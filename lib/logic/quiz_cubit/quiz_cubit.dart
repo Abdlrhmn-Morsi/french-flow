@@ -8,55 +8,37 @@ part 'quiz_state.dart';
 
 class QuizCubit extends Cubit<QuizState> {
   QuizCubit() : super(QuizInitial());
+  static QuizCubit get(context) => BlocProvider.of(context);
+  //!variables
   AudioCache? audioCache;
-
   bool isSelected = false;
   int nextQuestion = 0;
   int pressedIndex = -1;
   int trueAnswer = 0;
-
-  //!---------------------
-  bool isTheSelectedIsTrue = false;
-  bool fristCheckisTheSelectedIsTrue = false;
+  bool isUserChoseAnAnswer = false;
   bool goToNextQ = false;
   int holdeCorrectAnswerIndex = -1;
 
-  static QuizCubit get(context) => BlocProvider.of(context);
+  //! whenUserPressedOnItem
+  void whenUserPressedOnItem({index, List<QuizFrench>? quizfrench, context}) {
+    if (!isUserChoseAnAnswer) {
+      equalPressedIndexWithIndex(index!);
 
-  void nextQuestionfunc(
-      int length, List<QuizFrench> quizfrench, BuildContext context) {
-    if (nextQuestion < length - 1 && isSelected) {
-      nextQuestion++;
-      isSelected = false;
-      pressedIndex = -1;
-    } else if (nextQuestion >= length - 1) {
-      isSelected = false;
-      pressedIndex = -1;
-      caculateTotlaAndNavigate(quizfrench, context);
+      isChosenRightOrFalse(quizfrench!, index);
+      getTheChosenAnswer(index, quizfrench);
+      emit(WhenUserPressedOnItemState());
     }
-    emit(NextQuestionState());
   }
 
-  void caculateTotlaAndNavigate(
-      List<QuizFrench> quizfrench, BuildContext context) {
-    for (var element in quizfrench) {
-      if (element.isCorrectAnswer!) {
-        trueAnswer++;
-      }
-    }
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => QuizResult(
-          trueAnswer: trueAnswer,
-          quizfrench: quizfrench,
-        ),
-      ),
-    );
+  void equalPressedIndexWithIndex(int index) {
+    isSelected = true;
+    pressedIndex = index;
+    emit(IndexEqualState());
   }
 
-  void rightAnswerFunc(List<QuizFrench> quizfrench, int index) {
+  void isChosenRightOrFalse(List<QuizFrench> quizfrench, int index) {
     if (quizfrench[nextQuestion].options[index][0] ==
-        quizfrench[nextQuestion].trueAnswer) {
+        quizfrench[nextQuestion].correctAnswer) {
       quizfrench[nextQuestion].isCorrectAnswer = true;
 
       emit(RightAnswerState());
@@ -65,10 +47,89 @@ class QuizCubit extends Cubit<QuizState> {
     }
   }
 
-  void indexEqualFunc(int index) {
-    isSelected = true;
-    pressedIndex = index;
-    emit(IndexEqualState());
+  void getTheChosenAnswer(int index, List<QuizFrench>? quizfrench) {
+    quizfrench![nextQuestion].chosenAnswer = index;
+    emit(GetTheChosenAnswerState());
+  }
+
+//!whenUserPressedOn chose an next btn
+  void checkAndGoToNextQuistion({List<QuizFrench>? quizfrench, context}) {
+    if (goToNextQ) {
+      goToNextQuestion(quizfrench!.length, quizfrench, context!);
+      resetToNextQuistion();
+    } else {
+      getTheCorrectAnswerIndex(quizfrench);
+      playChosenAnswerSound(quizfrench);
+    }
+  }
+
+  void goToNextQuestion(int length, List<QuizFrench> quizfrench, context) {
+    if (nextQuestion < length - 1 && isSelected) {
+      nextQuestion++;
+      isSelected = false;
+      pressedIndex = -1;
+    } else if (nextQuestion >= length - 1) {
+      isSelected = false;
+      pressedIndex = -1;
+      caculateTrueAnswer(quizfrench: quizfrench);
+      navigateToQuizResultPage(context: context, quizfrench: quizfrench);
+    }
+    emit(NextQuestionState());
+  }
+
+  void getTheCorrectAnswerIndex(List<QuizFrench>? quizfrench) {
+    for (var i = 0; i < quizfrench![nextQuestion].options.length; i++) {
+      if (quizfrench[nextQuestion].correctAnswer ==
+          quizfrench[nextQuestion].options[i][0]) {
+        holdeCorrectAnswerIndex = i;
+      }
+    }
+    emit(HoldCorrectAnswerIndexState());
+  }
+
+  //? chosen sound effect
+  void playChosenAnswerSound(List<QuizFrench>? quizfrench) {
+    if (pressedIndex != -1 &&
+        quizfrench![nextQuestion].correctAnswer ==
+            quizfrench[nextQuestion].options[pressedIndex][0]) {
+      goToNextQ = true;
+      isUserChoseAnAnswer = true;
+      playRightAnswerSound();
+    } else if (pressedIndex != -1) {
+      goToNextQ = true;
+      isUserChoseAnAnswer = true;
+      playWrongAnswerSound();
+    }
+    emit(HoldCorrectAnswerIndexState());
+  }
+
+  void playRightAnswerSound() async {
+    await audioCache!.play('sounds/zapsplat.mp3');
+    emit(PlayWrongAudioState());
+  }
+
+  void playWrongAnswerSound() async {
+    await audioCache!.play('sounds/wrong-answer.mp3');
+    emit(PlayWrongAudioState());
+  }
+
+  void caculateTrueAnswer({List<QuizFrench>? quizfrench}) {
+    for (var element in quizfrench!) {
+      if (element.isCorrectAnswer!) {
+        trueAnswer++;
+      }
+    }
+  }
+
+  void navigateToQuizResultPage({List<QuizFrench>? quizfrench, context}) {
+    Navigator.of(context!).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) => QuizResult(
+          trueAnswer: trueAnswer,
+          quizfrench: quizfrench!,
+        ),
+      ),
+    );
   }
 
 //! for reset
@@ -82,57 +143,27 @@ class QuizCubit extends Cubit<QuizState> {
   void resetToNextQuistion() {
     goToNextQ = false;
     holdeCorrectAnswerIndex = -1;
-    isTheSelectedIsTrue = false;
-    fristCheckisTheSelectedIsTrue = false;
+    isUserChoseAnAnswer = false;
   }
 
-//! for the quiz result
-  void getTheChosenAnswerFunc(int index, List<QuizFrench>? quizfrench) {
-    quizfrench![nextQuestion].chosenAnswer = index;
-    emit(GetTheChosenAnswerState());
-  }
-
-//!---
-  void checkIfHeChoseTheRightAnswerFunc(List<QuizFrench>? quizfrench) {
-    if (quizfrench![nextQuestion].trueAnswer ==
-        quizfrench[nextQuestion].options[pressedIndex][0]) {
-      isTheSelectedIsTrue = true;
-      goToNextQ = true;
-      fristCheckisTheSelectedIsTrue = true;
-      playRightAnswerSound();
-    } else {
-      isTheSelectedIsTrue = false;
-      fristCheckisTheSelectedIsTrue = true;
-      goToNextQ = true;
-      playWrongAnswerSound();
-    }
-    emit(HoldCorrectAnswerIndexState());
-  }
-
-  void getTheCorrectAnswerFunc(List<QuizFrench>? quizfrench) {
-    for (var i = 0; i < quizfrench![nextQuestion].options.length; i++) {
-      if (quizfrench[nextQuestion].trueAnswer ==
-          quizfrench[nextQuestion].options[i][0]) {
-        holdeCorrectAnswerIndex = i;
-      }
-    }
-    emit(HoldCorrectAnswerIndexState());
-  }
-
-//! chosen sound effect
-  void playRightAnswerSound() async {
-    await audioCache!.play('sounds/zapsplat.mp3');
-    emit(PlayWrongAudioState());
-  }
-
-  void playWrongAnswerSound() async {
-    await audioCache!.play('sounds/wrong-answer.mp3');
-    emit(PlayWrongAudioState());
+//! widget change color or icon based on Chose
+  IconData changeQuizItemICONisTrueOrFalse({int? index}) {
+    return isUserChoseAnAnswer
+        ? holdeCorrectAnswerIndex == index
+            ? Icons.check
+            : pressedIndex == index
+                ? Icons.close
+                : pressedIndex == index
+                    ? Icons.close
+                    : Icons.close
+        : pressedIndex == index
+            ? Icons.check
+            : Icons.close;
   }
 
   Color changeQuizItemColorIsTrueOrFalse(
       {bool isIcon = false, int? index, List<QuizFrench>? quizfrench}) {
-    return fristCheckisTheSelectedIsTrue
+    return isUserChoseAnAnswer
         ? holdeCorrectAnswerIndex == index
             ? quizfrench![holdeCorrectAnswerIndex].statsColor = Colors.green
             : pressedIndex == index
@@ -147,19 +178,5 @@ class QuizCubit extends Cubit<QuizState> {
             : isIcon
                 ? Colors.white
                 : AppColors.darkBlue;
-  }
-
-  IconData changeQuizItemICONisTrueOrFalse({int? index}) {
-    return fristCheckisTheSelectedIsTrue
-        ? holdeCorrectAnswerIndex == index
-            ? Icons.check
-            : pressedIndex == index
-                ? Icons.close
-                : pressedIndex == index
-                    ? Icons.close
-                    : Icons.close
-        : pressedIndex == index
-            ? Icons.check
-            : Icons.close;
   }
 }

@@ -9,7 +9,7 @@ environment:
   sdk: '>=2.18.2 <3.0.0'
 
 dependencies:
-  audioplayers: 
+  audioplayers: ^0.20.1
   bloc: ^8.1.0
   cupertino_icons: ^1.0.2
   flutter:
@@ -17,6 +17,7 @@ dependencies:
   flutter_bloc: ^8.1.1
   flutter_localizations:
     sdk: flutter
+  flutter_native_splash: ^2.2.16
   flutter_offline: ^2.1.0
   flutter_zoom_drawer: ^3.0.3
   lottie: ^1.4.3
@@ -24,9 +25,23 @@ dependencies:
   youtube_player_flutter: ^8.1.1
 
 dev_dependencies:
+  flutter_launcher_icons: ^0.11.0
   flutter_lints: ^2.0.0
   flutter_test:
     sdk: flutter
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/app_icon/app_icon.png"
+  adaptive_icon_background: "#ffffff"
+  adaptive_icon_foreground: "assets/app_icon/app_icon_adaptive.png"    
+
+flutter_native_splash:
+  android: true
+  ios: true
+  color: "#0E3653"
+  image: "assets/app_icon/app_splash_screen.png"    
 
 flutter:
 
